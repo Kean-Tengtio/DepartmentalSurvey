@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="DepartmentalSurveyModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Department">
+          <Key>
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="DepartmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DivisionId" Type="int" Nullable="false" />
+          <Property Name="DepartmentAbbreviation" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DepartmentName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Enabled" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Evaluation">
+          <Key>
+            <PropertyRef Name="EvaluationId" />
+          </Key>
+          <Property Name="EvaluationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EvaluationDate" Type="datetime" />
+          <Property Name="Comment" Type="nvarchar(max)" />
+          <Property Name="EvaluationPeriodId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EvaluationDetail">
+          <Key>
+            <PropertyRef Name="EvaluationDetailId" />
+          </Key>
+          <Property Name="EvaluationDetailId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemId" Type="int" Nullable="false" />
+          <Property Name="Score" Type="int" />
+          <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="EvaluationPeriod">
+          <Key>
+            <PropertyRef Name="EvaluationPeriodId" />
+          </Key>
+          <Property Name="EvaluationPeriodId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SchoolYearId" Type="int" Nullable="false" />
+          <Property Name="StartDate" Type="datetime" />
+          <Property Name="EndDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="SchoolYear">
+          <Key>
+            <PropertyRef Name="SchoolYearId" />
+          </Key>
+          <Property Name="SchoolYearId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SchoolYearName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Enabled" Type="bit" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="SurveyStart" Type="datetime" />
+          <Property Name="SurveyEnd" Type="datetime" />
+          <Property Name="StudentUpdateStart" Type="datetime" />
+          <Property Name="StudentUpdateEnd" Type="datetime" />
+          <Property Name="ForOnlineReservation" Type="bit" />
+        </EntityType>
+        <EntityType Name="SurveyItems">
+          <Key>
+            <PropertyRef Name="ItemId" />
+          </Key>
+          <Property Name="ItemId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartmentId" Type="int" Nullable="false" />
+          <Property Name="SurveyQuestion" Type="nvarchar(max)" />
+          <Property Name="Weight" Type="int" />
+          <Property Name="IsActive" Type="bit" />
+        </EntityType>
+        <Association Name="FK_Evaluation_EvaluationPeriod">
+          <End Role="EvaluationPeriod" Type="Self.EvaluationPeriod" Multiplicity="1" />
+          <End Role="Evaluation" Type="Self.Evaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EvaluationPeriod">
+              <PropertyRef Name="EvaluationPeriodId" />
+            </Principal>
+            <Dependent Role="Evaluation">
+              <PropertyRef Name="EvaluationPeriodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EvaluationDetail_SurveyItems">
+          <End Role="SurveyItems" Type="Self.SurveyItems" Multiplicity="1" />
+          <End Role="EvaluationDetail" Type="Self.EvaluationDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SurveyItems">
+              <PropertyRef Name="ItemId" />
+            </Principal>
+            <Dependent Role="EvaluationDetail">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EvaluationPeriod_SchoolYear">
+          <End Role="SchoolYear" Type="Self.SchoolYear" Multiplicity="1" />
+          <End Role="EvaluationPeriod" Type="Self.EvaluationPeriod" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SchoolYear">
+              <PropertyRef Name="SchoolYearId" />
+            </Principal>
+            <Dependent Role="EvaluationPeriod">
+              <PropertyRef Name="SchoolYearId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SurveyItems_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="1" />
+          <End Role="SurveyItems" Type="Self.SurveyItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="SurveyItems">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DepartmentalSurveyModelStoreContainer">
+          <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Evaluation" EntityType="Self.Evaluation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EvaluationDetail" EntityType="Self.EvaluationDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EvaluationPeriod" EntityType="Self.EvaluationPeriod" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SchoolYear" EntityType="Self.SchoolYear" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SurveyItems" EntityType="Self.SurveyItems" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Evaluation_EvaluationPeriod" Association="Self.FK_Evaluation_EvaluationPeriod">
+            <End Role="EvaluationPeriod" EntitySet="EvaluationPeriod" />
+            <End Role="Evaluation" EntitySet="Evaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EvaluationDetail_SurveyItems" Association="Self.FK_EvaluationDetail_SurveyItems">
+            <End Role="SurveyItems" EntitySet="SurveyItems" />
+            <End Role="EvaluationDetail" EntitySet="EvaluationDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EvaluationPeriod_SchoolYear" Association="Self.FK_EvaluationPeriod_SchoolYear">
+            <End Role="SchoolYear" EntitySet="SchoolYear" />
+            <End Role="EvaluationPeriod" EntitySet="EvaluationPeriod" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SurveyItems_Department" Association="Self.FK_SurveyItems_Department">
+            <End Role="Department" EntitySet="Department" />
+            <End Role="SurveyItems" EntitySet="SurveyItems" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DepartmentalSurveyModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Department">
+          <Key>
+            <PropertyRef Name="DepartmentId" />
+          </Key>
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DivisionId" Type="Int32" Nullable="false" />
+          <Property Name="DepartmentAbbreviation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DepartmentName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Enabled" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="SurveyItems" Relationship="DepartmentalSurveyModel.FK_SurveyItems_Department" FromRole="Department" ToRole="SurveyItems" />
+        </EntityType>
+        <EntityType Name="Evaluation">
+          <Key>
+            <PropertyRef Name="EvaluationId" />
+          </Key>
+          <Property Name="EvaluationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EvaluationDate" Type="DateTime" Precision="3" />
+          <Property Name="Comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EvaluationPeriodId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EvaluationPeriod" Relationship="DepartmentalSurveyModel.FK_Evaluation_EvaluationPeriod" FromRole="Evaluation" ToRole="EvaluationPeriod" />
+        </EntityType>
+        <EntityType Name="SchoolYear">
+          <Key>
+            <PropertyRef Name="SchoolYearId" />
+          </Key>
+          <Property Name="SchoolYearId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SchoolYearName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Enabled" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="SurveyStart" Type="DateTime" Precision="3" />
+          <Property Name="SurveyEnd" Type="DateTime" Precision="3" />
+          <Property Name="StudentUpdateStart" Type="DateTime" Precision="3" />
+          <Property Name="StudentUpdateEnd" Type="DateTime" Precision="3" />
+          <Property Name="ForOnlineReservation" Type="Boolean" />
+          <NavigationProperty Name="EvaluationPeriod" Relationship="DepartmentalSurveyModel.FK_EvaluationPeriod_SchoolYear" FromRole="SchoolYear" ToRole="EvaluationPeriod" />
+        </EntityType>
+        <EntityContainer Name="DepartmentalSurveyEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Department" EntityType="Self.Department" />
+          <EntitySet Name="Evaluation" EntityType="Self.Evaluation" />
+          <EntitySet Name="SchoolYear" EntityType="Self.SchoolYear" />
+          <EntitySet Name="EvaluationDetail" EntityType="DepartmentalSurveyModel.EvaluationDetail" />
+          <EntitySet Name="EvaluationPeriod" EntityType="DepartmentalSurveyModel.EvaluationPeriod" />
+          <AssociationSet Name="FK_Evaluation_EvaluationPeriod" Association="DepartmentalSurveyModel.FK_Evaluation_EvaluationPeriod">
+            <End Role="EvaluationPeriod" EntitySet="EvaluationPeriod" />
+            <End Role="Evaluation" EntitySet="Evaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EvaluationPeriod_SchoolYear" Association="DepartmentalSurveyModel.FK_EvaluationPeriod_SchoolYear">
+            <End Role="SchoolYear" EntitySet="SchoolYear" />
+            <End Role="EvaluationPeriod" EntitySet="EvaluationPeriod" />
+          </AssociationSet>
+          <EntitySet Name="SurveyItems" EntityType="DepartmentalSurveyModel.SurveyItems" />
+          <AssociationSet Name="FK_SurveyItems_Department" Association="DepartmentalSurveyModel.FK_SurveyItems_Department">
+            <End Role="Department" EntitySet="Department" />
+            <End Role="SurveyItems" EntitySet="SurveyItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EvaluationDetail_SurveyItems" Association="DepartmentalSurveyModel.FK_EvaluationDetail_SurveyItems">
+            <End Role="SurveyItems" EntitySet="SurveyItems" />
+            <End Role="EvaluationDetail" EntitySet="EvaluationDetail" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="EvaluationDetail">
+          <Key>
+            <PropertyRef Name="EvaluationDetailId" />
+          </Key>
+          <Property Name="EvaluationDetailId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemId" Type="Int32" Nullable="false" />
+          <Property Name="Score" Type="Int32" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="SurveyItems" Relationship="DepartmentalSurveyModel.FK_EvaluationDetail_SurveyItems" FromRole="EvaluationDetail" ToRole="SurveyItems" />
+        </EntityType>
+        <EntityType Name="EvaluationPeriod">
+          <Key>
+            <PropertyRef Name="EvaluationPeriodId" />
+          </Key>
+          <Property Name="EvaluationPeriodId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SchoolYearId" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Evaluation" Relationship="DepartmentalSurveyModel.FK_Evaluation_EvaluationPeriod" FromRole="EvaluationPeriod" ToRole="Evaluation" />
+          <NavigationProperty Name="SchoolYear" Relationship="DepartmentalSurveyModel.FK_EvaluationPeriod_SchoolYear" FromRole="EvaluationPeriod" ToRole="SchoolYear" />
+        </EntityType>
+        <Association Name="FK_Evaluation_EvaluationPeriod">
+          <End Type="DepartmentalSurveyModel.EvaluationPeriod" Role="EvaluationPeriod" Multiplicity="1" />
+          <End Type="DepartmentalSurveyModel.Evaluation" Role="Evaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EvaluationPeriod">
+              <PropertyRef Name="EvaluationPeriodId" />
+            </Principal>
+            <Dependent Role="Evaluation">
+              <PropertyRef Name="EvaluationPeriodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EvaluationPeriod_SchoolYear">
+          <End Type="DepartmentalSurveyModel.SchoolYear" Role="SchoolYear" Multiplicity="1" />
+          <End Type="DepartmentalSurveyModel.EvaluationPeriod" Role="EvaluationPeriod" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SchoolYear">
+              <PropertyRef Name="SchoolYearId" />
+            </Principal>
+            <Dependent Role="EvaluationPeriod">
+              <PropertyRef Name="SchoolYearId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SurveyItems">
+          <Key>
+            <PropertyRef Name="ItemId" />
+          </Key>
+          <Property Name="ItemId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartmentId" Type="Int32" Nullable="false" />
+          <Property Name="SurveyQuestion" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Weight" Type="Int32" />
+          <Property Name="IsActive" Type="Boolean" />
+          <NavigationProperty Name="Department" Relationship="DepartmentalSurveyModel.FK_SurveyItems_Department" FromRole="SurveyItems" ToRole="Department" />
+          <NavigationProperty Name="EvaluationDetail" Relationship="DepartmentalSurveyModel.FK_EvaluationDetail_SurveyItems" FromRole="SurveyItems" ToRole="EvaluationDetail" />
+        </EntityType>
+        <Association Name="FK_SurveyItems_Department">
+          <End Type="DepartmentalSurveyModel.Department" Role="Department" Multiplicity="1" />
+          <End Type="DepartmentalSurveyModel.SurveyItems" Role="SurveyItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="DepartmentId" />
+            </Principal>
+            <Dependent Role="SurveyItems">
+              <PropertyRef Name="DepartmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EvaluationDetail_SurveyItems">
+          <End Type="DepartmentalSurveyModel.SurveyItems" Role="SurveyItems" Multiplicity="1" />
+          <End Type="DepartmentalSurveyModel.EvaluationDetail" Role="EvaluationDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SurveyItems">
+              <PropertyRef Name="ItemId" />
+            </Principal>
+            <Dependent Role="EvaluationDetail">
+              <PropertyRef Name="ItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DepartmentalSurveyModelStoreContainer" CdmEntityContainer="DepartmentalSurveyEntities">
+          <EntitySetMapping Name="Department">
+            <EntityTypeMapping TypeName="DepartmentalSurveyModel.Department">
+              <MappingFragment StoreEntitySet="Department">
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="DivisionId" ColumnName="DivisionId" />
+                <ScalarProperty Name="DepartmentAbbreviation" ColumnName="DepartmentAbbreviation" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+                <ScalarProperty Name="Enabled" ColumnName="Enabled" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Evaluation">
+            <EntityTypeMapping TypeName="DepartmentalSurveyModel.Evaluation">
+              <MappingFragment StoreEntitySet="Evaluation">
+                <ScalarProperty Name="EvaluationId" ColumnName="EvaluationId" />
+                <ScalarProperty Name="EvaluationDate" ColumnName="EvaluationDate" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="EvaluationPeriodId" ColumnName="EvaluationPeriodId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SchoolYear">
+            <EntityTypeMapping TypeName="DepartmentalSurveyModel.SchoolYear">
+              <MappingFragment StoreEntitySet="SchoolYear">
+                <ScalarProperty Name="SchoolYearId" ColumnName="SchoolYearId" />
+                <ScalarProperty Name="SchoolYearName" ColumnName="SchoolYearName" />
+                <ScalarProperty Name="Enabled" ColumnName="Enabled" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+                <ScalarProperty Name="SurveyStart" ColumnName="SurveyStart" />
+                <ScalarProperty Name="SurveyEnd" ColumnName="SurveyEnd" />
+                <ScalarProperty Name="StudentUpdateStart" ColumnName="StudentUpdateStart" />
+                <ScalarProperty Name="StudentUpdateEnd" ColumnName="StudentUpdateEnd" />
+                <ScalarProperty Name="ForOnlineReservation" ColumnName="ForOnlineReservation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EvaluationDetail">
+            <EntityTypeMapping TypeName="DepartmentalSurveyModel.EvaluationDetail">
+              <MappingFragment StoreEntitySet="EvaluationDetail">
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+                <ScalarProperty Name="Score" ColumnName="Score" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="EvaluationDetailId" ColumnName="EvaluationDetailId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EvaluationPeriod">
+            <EntityTypeMapping TypeName="DepartmentalSurveyModel.EvaluationPeriod">
+              <MappingFragment StoreEntitySet="EvaluationPeriod">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="SchoolYearId" ColumnName="SchoolYearId" />
+                <ScalarProperty Name="EvaluationPeriodId" ColumnName="EvaluationPeriodId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SurveyItems">
+            <EntityTypeMapping TypeName="DepartmentalSurveyModel.SurveyItems">
+              <MappingFragment StoreEntitySet="SurveyItems">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="SurveyQuestion" ColumnName="SurveyQuestion" />
+                <ScalarProperty Name="DepartmentId" ColumnName="DepartmentId" />
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
